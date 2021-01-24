@@ -3,6 +3,17 @@
 {% block title %}Viewing Thread{% endblock %}
 
 {% block body %}
+
+    <style>
+        .text-white a {
+            color: #ffffff;
+        }
+
+        .text-white a:hover {
+            color: #ced3db;
+        }
+    </style>
+
     {% set ADMIN = "no" %}
 
     {% for role in app.user.roles %}
@@ -43,7 +54,7 @@
         </div>
 
     <div class="card border-success">
-        <div class="card-header bg-light">
+        <div class="card-header bg-info">
             <h3 class="mb-0 text-white"><a href="/forum/{{ board.id }}">{{ board.forumName }}</a> <a href="/forum/thread/{{ thread.id }}">- {{thread.threadTitle }}</a></h3></div>
         <div class="card-body">
             <div class="row" style="width:100%;">
