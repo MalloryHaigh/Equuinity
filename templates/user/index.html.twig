@@ -1,0 +1,250 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Viewing Profile{% endblock %}
+
+{% block body %}
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+
+    {% set Admin = "no" %}
+    {% set Upgraded = "no" %}
+
+    {% for role in player.roles %}
+        {% if role == "ROLE_ADMIN" %}
+            {% set Admin = "yes" %}
+        {% endif %}
+        {% if role == "ROLE_UPGRADED" %}
+            {% set Upgraded = "yes" %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Card -->
+    <div class="card text-center">
+
+        <div class="card-header">
+                <a class="btn btn-sm btn-success" href="#"><i class="ti-pencil-alt"></i> MESSAGE</a>
+                <a class="btn btn-sm btn-dark" href="#"><i class="ti-thumb-down"></i> REPORT</a>
+        </div>
+        <div class="card-body">
+            <h2 class="card-title">{{ player.displayName|default('New Player') }} (#{{ player.id }})</h2>
+            <p class="card-text">{{player.status}}</p>
+        </div>
+    </div>
+    <!-- Card -->
+
+
+
+    {{ player.profile | raw }}
+
+
+
+    <div class="profile-info">
+        <div class="card">
+            <div class="card-body">
+                <div class="info-wrapper">
+                    <div class="row">
+                        <div class="col-sm-4" style="text-align: center">
+                            <h4>{{ player.displayName }} (#{{ player.id }})</h4>
+                            <span class="badge badge-pill badge-secondary">Member Since {{ player.joined | format_datetime('short', 'none')  }}</span>
+                            {% for role in player.roles %}
+                                {% if role == "ROLE_ADMIN" %}
+                                    <br><span class="badge badge-pill badge-primary"><i class="ti-crown"></i> Administrator</span>
+                                {% endif %}
+                                {% if role == "ROLE_UPGRADED" %}
+                                    {% if player.days == 999 %}
+                                        {% set days = "Infinite" %}
+                                    {% elseif player.days < 999 %}
+                                        {% set length = player.days %}
+                                        {% set verbiage = " Days" %}
+                                        {% set days = length ~ verbiage %}
+                                    {% endif %}
+                                    <br><span class="badge badge-pill badge-warning"><i class="ti-heart"></i> Upgraded ({{days}})</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-4">
+                            <h4 class="card-title">Stable Info</h4>
+                            <hr style="margin-top:0px;margin-bottom:6px;">
+                            {% if Upgraded == "yes" or Admin == "yes" %}
+                            <strong>Stable Name: </strong> <a href="#" data-toggle="modal" data-target="#stable-modal">{{player.stable}}</a><br>
+                            0 / {{player.stalls}} Stalls Available - {{player.board | format_currency('USD')}}/month
+                                {% else %}
+                                <em>This player cannot have a stable.</em>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-4">
+                            <h4 class="card-title">Quick Stats</h4>
+                            <hr style="margin-top:0px;margin-bottom:6px;">
+                            <strong>Player Points </strong> 0<br>
+                            <strong>Money </strong> {{player.money | format_currency('USD') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--- DISPLAY HORSES --->
+    <div class="profile-info">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="mb-0" style="text-align: center">{{player.displayName}}'s Horses</h3>
+                <hr>
+                <table data-toggle="table" data-height="250" data-mobile-responsive="true"
+                       style="width:80%; margin-left:auto;margin-right:auto;">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Details</th>
+                        <th>Points</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="#">Souvereign</a></td>
+                            <td>12 Year Old Hanoverian Gelding</td>
+                            <td>1,123,456</td>
+                            <td><span class="badge badge-danger">For Sale</span> <span class="badge badge-info">For Stud</span></td>
+                        </tr>
+                        <tr>
+                            <td><a href="#">Souvereign</a></td>
+                            <td>12 Year Old Hanoverian Gelding</td>
+                            <td>1,123,456</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+        {% if player.id == app.user.id %}
+
+            <div class="row profile-controls">
+                <div class="col-lg-8 col-md-12">
+                    <div class="card card-body">
+                        <h3 class="mb-0">Profile Controls</h3>
+                        <p class="text-muted mb-4 font-13">Update your public information.</p>
+                        <div class="row">
+                            {{ form_start(editProfile, {'attr': {'class': 'form-wrapper'}}) }}
+                                <div class="col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <h6>{{ form_label(editProfile.displayName) }}</h6>
+                                        {{ form_widget(editProfile.displayName, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    <div class="form-group">
+                                        <h6>{{ form_label(editProfile.status) }}</h6>
+                                        {{ form_widget(editProfile.status, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    <div class="form-group">
+                                        <h6>{{ form_label(editProfile.avatar) }}</h6>
+                                        {{ form_widget(editProfile.avatar, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    <div class="form-group">
+                                        <h6>{{ form_label(editProfile.profile) }}</h6>
+                                        {{ form_widget(editProfile.profile, {'attr': {'class': 'form-control mymce'}}) }}
+                                    </div>
+                                    {% if Upgraded == "yes" or Admin == "yes" %}
+                                    <div class="form-group">
+                                        <h6>{{ form_label(editProfile.signature) }}</h6>
+                                        {{ form_widget(editProfile.signature, {'attr': {'class': 'form-control sig'}}) }}
+                                    </div>
+                                    {% else %}
+                                            {{ form_widget(editProfile.signature, {'attr': {'class': 'hidden'}}) }}
+                                    {% endif %}
+                                    <div class="form-group">
+                                        {{ form_widget(editProfile.save, {'attr': {'class': 'btn btn-block btn-success'}}) }}
+                                    </div>
+                                </div>
+                            {{ form_end(editProfile) }}
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    {% if Upgraded == "yes" or Admin == "yes" %}
+                    <div class="card card-body" style="margin-bottom:50px;">
+                        <h3 class="mb-0">Stable Info</h3>
+                        <p class="text-muted mb-4 font-13">Manage your stable, available to upgraded players. Setting your board price to $0/month will make your stable private.</p>
+                        {{ form_start(editStable, {'attr': {'class': 'form-wrapper'}}) }}
+                        <div class="col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <h6>{{ form_label(editStable.stable) }}</h6>
+                                {{ form_widget(editStable.stable, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            <div class="form-group">
+                                <h6>{{ form_label(editStable.board) }}</h6>
+                                {{ form_widget(editStable.board, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(editStable.save, {'attr': {'class': 'btn btn-block btn-success'}}) }}
+                            </div>
+                        {{ form_end(editStable) }}
+
+                            <a href="#" class="btn btn-block btn-primary">Buy Additional Stalls</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="card card-body">
+                        <h3 class="mb-0">Change Password</h3>
+                        <p class="text-muted mb-4 font-13">Once changed, you will be logged out.</p>
+                        {{ form_start(editPassword, {'attr': {'class': 'form-wrapper'}}) }}
+                        <div class="col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <h6>{{ form_label(editPassword.password) }}</h6>
+                                {{ form_widget(editPassword.password, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(editPassword.save, {'attr': {'class': 'btn btn-block btn-success'}}) }}
+                            </div>
+                        </div>
+                        {{ form_end(editPassword) }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    <!--  Modal content -->
+    <div class="modal fade" id="stable-modal" tabindex="-1" role="dialog"
+         aria-labelledby="stable-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header modal-colored-header bg-success">
+                    <h4 class="modal-title text-white" id="stable-modal-label" style="text-align: center;">{{ player.stable }} -- Stable owned by {{ player.displayName }} (#{{ player.id}})</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="card bg-success">
+                                <div class="card-body" style="color:#ffffff;">
+                                    <h5 style="color:#ffffff;">Stalls</h5>
+                                    <hr style="margin-top:0px;">
+                                    0 of {{ player.stalls }} Available
+                                    <br><br><br>
+                                    <h5 style="color:#ffffff;">Board</h5>
+                                    <hr style="margin-top:0px;">
+                                    {{ player.board | format_currency('USD') }} per month
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <h5>Boarded Horses</h5>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+{% endblock %}

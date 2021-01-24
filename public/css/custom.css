@@ -1,0 +1,13 @@
+/**** CUSTOM STYLING ****/
+.sidebar-nav ul .sidebar-item .sidebar-link {
+    padding: 8px 15px 8px 8px;
+    display: flex;
+    border-radius: 4px;
+    white-space: nowrap;
+    align-items: center;
+    position: relative;
+    line-height: 25px;
+    font-size: 15px;
+    opacity: 0.6;
+    color: #fff;
+}

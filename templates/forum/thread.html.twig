@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Viewing Thread{% endblock %}
+
+{% block body %}
+    {% set ADMIN = "no" %}
+
+    {% for role in app.user.roles %}
+        {% if role == "ROLE_ADMIN" %}
+            {% set ADMIN = "yes" %}
+        {% endif %}
+    {% endfor %}
+
+    {% set ACCESS = board.access %}
+
+    <div class="card">
+        <div class="card-body" style="text-align: center;">
+            <h2 class="card-title">Equuinity Forums</h2>
+            <a href="#" data-toggle="modal" data-target="#rules-modal" class="btn btn-sm btn-outline-info">Forum Rules</a> <a href="" class="btn btn-sm btn-outline-info">Modbox</a>
+        </div>
+    </div>
+
+    <!--  Modal content -->
+    <div class="modal fade" id="rules-modal" tabindex="-1" role="dialog"
+         aria-labelledby="rules-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h1>Forum Rules</h1>
+                    {{ rules | raw }}
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    {% if ACCESS == "ROLE_ADMIN" and ADMIN == "no" %}
+    <div class="alert alert-danger">You do not have permission to view this board!</div>
+    {% else %}
+
+        {# display navigation #}
+        <div class="navigation" style="width:100%; margin-left: auto;margin-right:auto;">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+
+    <div class="card border-success">
+        <div class="card-header bg-light">
+            <h3 class="mb-0 text-white"><a href="/forum/{{ board.id }}">{{ board.forumName }}</a> <a href="/forum/thread/{{ thread.id }}">- {{thread.threadTitle }}</a></h3></div>
+        <div class="card-body">
+            <div class="row" style="width:100%;">
+                <div class="col-2" style="text-align: center;">
+                    <img src="{{ op.avatar }}"><br>
+                    <a href="{{ path('user', {'id': op.id }) }}"><h6 style="margin-top:8px;margin-bottom:-15px;">{{ op.displayName }} (#{{ op.id }})</h6></a>
+                    {% for role in op.roles %}
+                        {% if role == "ROLE_ADMIN" %}
+                            <br><span class="badge badge-pill badge-primary"><i class="ti-crown"></i> Administrator</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="col-10" class="text-justify">
+                    <div class="row" style="margin-bottom:10px;">
+                        <div class="col-6" style="text-align:left;">
+                            <em>Posted on {{ thread.postedDate | date }}</em>
+                        </div>
+                        <div class="col-6" style="text-align:right;">
+                            {% if thread.postedBy.getId == app.user.getId %}
+                            <a href="/forum/edit/thread/{{ thread.id }}" class="btn btn-sm btn-secondary"><i class="far fa-edit"></i> Edit Post</a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    {% if thread.status == "Sticky" %}
+                                        <a href="/forum/unstick/{{ thread.id }}" class="btn btn-sm btn-primary"><i class="far fa-bell-slash"></i> Unstick</a>
+                                    {% elseif thread.status == "Open" %}
+                                        <a href="/forum/stick/{{ thread.id }}" class="btn btn-sm btn-primary"><i class="far fa-bell"></i> Make Sticky</a>
+                                    {% endif %}
+                                {% endif %}
+                            {%  endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="text-justify" style="min-height:150px;">
+                            {{ thread.postBody | raw }}
+                        </div>
+                    </div>
+                    {% for role in op.roles %}
+                        {% if role == "ROLE_ADMIN" or role == "ROLE_UPGRADED" %}
+                            <div style="margin-top:10px;border-top: 1px solid #d6d6d6;padding-top:10px;width:100%;">
+                                {{ op.signature | raw }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    {% for reply in pagination %}
+    <div class="card border-success">
+        <div class="card-body">
+            <div class="row" style="width:100%;">
+                <div class="col-2" style="text-align: center;">
+                    <a id="{{ reply.id }}"></a>
+                    <img src="{{ reply.postedBy.avatar }}"><br>
+                    <a href="{{ path('user', {'id': reply.postedBy.id}) }}"><h6 style="margin-top:8px;margin-bottom:-15px;">{{ reply.postedBy.displayName }} (#{{ reply.postedBy.id }})</h6></a>
+                    {% for role in reply.postedBy.roles %}
+                        {% if role == "ROLE_ADMIN" %}
+                            <br><span class="badge badge-pill badge-primary"><i class="ti-crown"></i> Administrator</span>
+                            {% else %}
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="col-10" class="text-justify">
+                    <div class="row" style="margin-bottom:10px;">
+                        <div class="col-6" style="text-align:left;">
+                            <em>Posted on {{ reply.postedDate | date }}</em>
+                        </div>
+                        <div class="col-6" style="text-align:right;">
+                            {% if reply.postedBy.getId == app.user.getId %}
+                            <a href="{{ path('edit', {'id': reply.id}) }}" class="btn btn-sm btn-secondary"><i class="far fa-edit"></i> Edit Post</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="text-justify" style="min-height:150px;">
+                        {{ reply.postBody | raw }}
+                        </div>
+                    </div>
+
+                    {% for role in reply.postedBy.roles %}
+                        {% if role == "ROLE_ADMIN" or role == "ROLE_UPGRADED" %}
+                            <div style="margin-top:10px;border-top: 1px solid #d6d6d6;padding-top:10px;">
+                                {{ reply.postedBy.signature | raw }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+
+        {# display navigation #}
+        <div class="navigation" style="width:100%; margin-left: auto;margin-right:auto;">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+
+    <br><br>
+    <hr>
+    <br><br>
+    <div class="card">
+        <div class="card card-body">
+            <h3 class="mb-0">Add Reply</h3>
+            <p class="text-muted mb-4 font-13">Add to the conversation!</p>
+            <div class="row" style="width:100%;">
+                <div class="col-sm-12 col-xs-12">
+                {{ form_start(new) }}
+
+                <div class="form-group">
+                    <h6>{{ form_label(new.post_body) }}</h6>
+                    {{ form_widget(new.post_body, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_widget(new.save, {'attr': {'class': 'btn btn-block btn-success'}}) }}
+                </div>
+                {{ form_end(new) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+{% endblock %}

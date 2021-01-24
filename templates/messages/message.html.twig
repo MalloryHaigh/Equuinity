@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inbox{% endblock %}
+
+{% block body %}
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body" style="">
+                <h1 align="center">Reading Message</h1>
+                <div class="row" style="width:50%;margin-left:auto;margin-right:auto;">
+                    <a class="btn btn-block btn-dark" href="{{ path('inbox') }}" style="display:none;">Back to Inbox</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info">
+                <h4 class="mb-0 text-white" style="text-align: center;">{{ message.messageTopic }}</h4></div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-3" style="text-align: center;">
+                        <img src="{{ message.fromUser.avatar }}">
+                        <h3 style="margin-top:10px;"><a href="{{ path('user', {'id': message.fromUser.id}) }}">{{ message.fromUser }}</a></h3>
+                        {% for role in message.fromUser.roles %}
+                            {% if role == "ROLE_ADMIN" %}
+                                <span class="badge badge-pill badge-primary" style="margin-bottom:5px;"><i class="ti-crown"></i> Administrator</span><br>
+                            {% endif %}
+                        {% endfor %}
+                        Sent {{ message.messageSent | date }}
+                    </div>
+                    <div class="col-9" style="text-align: justify;">
+                        {{ message.messageBody | raw }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body" style="">
+                <h2 align="center">Send Reply</h2>
+                    {{ form_start(reply, {'attr': {'class': 'form-wrapper'}}) }}
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="form-group">
+                            <h6>{{ form_label(reply.message_body) }}</h6>
+                            {{ form_widget(reply.message_body, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_widget(reply.save, {'attr': {'class': 'btn btn-block btn-success'}}) }}
+                        </div>
+                        {{ form_end(reply) }}
+                </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

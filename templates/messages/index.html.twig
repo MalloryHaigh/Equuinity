@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inbox{% endblock %}
+
+{% block body %}
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body" style="">
+                <h1 align="center">Inbox</h1>
+                <div class="row" style="width:50%;margin-left:auto;margin-right:auto;">
+                    <button class="btn btn-block btn-success compose">Compose Message</button>
+                    <button class="btn btn-block btn-dark compose-back" style="display:none;">Back to Inbox</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="row message-compose" style="display:none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body" style="">
+                    <h3 align="center">Compose a Message</h3>
+                    {{ form_start(compose, {'attr': {'class': 'form-wrapper'}}) }}
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="form-group">
+                            <h6>{{ form_label(compose.to_user) }}</h6>
+                            {{ form_widget(compose.to_user, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            <h6>{{ form_label(compose.message_topic) }}</h6>
+                            {{ form_widget(compose.message_topic, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            <h6>{{ form_label(compose.message_body) }}</h6>
+                            {{ form_widget(compose.message_body, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_widget(compose.save, {'attr': {'class': 'btn btn-block btn-success'}}) }}
+                        </div>
+                        {{ form_end(compose) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {# display navigation #}
+    <div class="navigation" style="width:100%; margin-left: auto;margin-right:auto;">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+    <div class="row message-inbox">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body" style="">
+                    <div class="row">
+                        <div class="col-12">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead class="bg-info text-white">
+                                        <tr>
+                                            <th>Message Title</th>
+                                            <th>From</th>
+                                            <th>Received</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for message in pagination %}
+                                            <tr>
+                                                <td style="vertical-align: middle;"><a href="{{ path('message', {'id': message.id}) }}">{% if message.messageStatus == "UNREAD" %}<strong><span class="badge-pill badge-danger">NEW</span> {{ message.messageTopic }}</strong>{% else %}{{ message.messageTopic }}{% endif %}</a></td>
+                                                <td style="vertical-align: middle;"><a href="{{ path('user', {'id': message.fromUser.id}) }}">{{ message.fromUser }}</a></td>
+                                                <td style="vertical-align: middle;">{{ message.messageSent | date }}</td>
+                                                <td style="vertical-align: middle;text-align: center;"><a href="{{ path('deleteMessage', {'id': message.id}) }}" class="btn btn-dark"><i class="fa fa-trash-alt"></i></a></td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# display navigation #}
+    <div class="navigation" style="width:100%; margin-left: auto;margin-right:auto;">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+{% endblock %}

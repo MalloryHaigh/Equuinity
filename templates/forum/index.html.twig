@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forums{% endblock %}
+
+{% block body %}
+    <style>
+        .text-white a {
+            color: #ffffff;
+        }
+
+        .text-white a:hover {
+            color: #ced3db;
+        }
+    </style>
+
+    {% set ADMIN = "no" %}
+
+    {% for role in app.user.roles %}
+        {% if role == "ROLE_ADMIN" %}
+            {% set ADMIN = "yes" %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body" style="text-align: center;">
+            <h2 class="card-title">Equuinity Forums</h2>
+            <a href="#" data-toggle="modal" data-target="#rules-modal" class="btn btn-sm btn-outline-info">Forum Rules</a> <a href="" class="btn btn-sm btn-outline-info">Modbox</a>
+        </div>
+    </div>
+
+    <!--  Modal content -->
+    <div class="modal fade" id="rules-modal" tabindex="-1" role="dialog"
+         aria-labelledby="rules-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h1>Forum Rules</h1>
+                    {{ rules | raw }}
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="row">
+
+    {% for forum in forums %}
+        {% set access = forum.access %}
+        <!-- Check access control -->
+        {% if access == "ROLE_ADMIN" and ADMIN == "yes" %}
+            <div class="col-md-4">
+                <div class="card border-success" style="min-height:170px;">
+                    <div class="card-header bg-dark">
+                        <h3 class="mb-0 text-white" align="center"><a href="forum/{{ forum.id }}">{{ forum.forumIcon | raw }} {{forum.forumName}}</a></h3></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <p class="card-text">{{forum.forumDescription}}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {% elseif access != "ROLE_ADMIN" %}
+        <div class="col-md-4">
+            <div class="card border-success" style="min-height:170px;">
+                <div class="card-header bg-info">
+                    <h3 class="mb-0 text-white" align="center"><a href="forum/{{ forum.id }}">{{ forum.forumIcon | raw }} {{forum.forumName}}</a></h3></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12 text-center">
+                            <p class="card-text">{{forum.forumDescription}}</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+{% endblock %}

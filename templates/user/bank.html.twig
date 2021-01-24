@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bank{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body" style="">
+                    <h1 align="center">Bank</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="row" style="width:90%;margin-left:auto;margin-right:auto;">
+            <div class="col-sm-6">
+                <div class="card bg-info">
+                    <div class="card-body text-white">
+                        <div class="d-flex flex-row">
+                            <div class="display-6 align-self-center"><i class="fa fa-piggy-bank"></i></div>
+                            <div class="p-2 align-self-center">
+                                <h4 class="mb-0 text-white" style="margin-left:10px;">Bank Balance</h4>
+                                <h6 class="text-white" style="margin-left:10px;">Daily Interest: {{ app.user.interest }}%</h6>
+                            </div>
+                            <div class="ml-auto align-self-center">
+                                <h2 class="font-weight-medium mb-0 text-white">{{ app.user.getBank | format_currency('USD') }}</h2>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card bg-success">
+                    <div class="card-body text-white">
+                        <div class="d-flex flex-row">
+                            <div class="display-6 align-self-center"><i class="fa fa-calendar-alt"></i></div>
+                            <div class="p-2 align-self-center">
+                                <h4 class="mb-0 text-white" style="margin-left:10px;">Weekly Salary</h4>
+                                <h6 class="text-white" style="margin-left:10px;">Deposited on Mondays</h6>
+                            </div>
+                            <div class="ml-auto align-self-center">
+                                <h2 class="font-weight-medium mb-0 text-white">{{ app.user.getSalary | format_currency('USD') }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="row" style="width:90%;margin-left:auto;margin-right:auto;">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" align="center">Make a Withdrawl</h4>
+                    {{ form_start(withdraw, {'attr': {'class': 'form-wrapper'}}) }}
+                    <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                        {{ form_widget(withdraw.amount, {'attr': {'class': 'form-control'}}) }}
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                    </div>
+                    {{ form_widget(withdraw.save, {'attr': {'class': 'btn btn-block btn-primary'}}) }}
+                    {{ form_end(withdraw) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" align="center">Make a Deposit</h4>
+                    {{ form_start(deposit, {'attr': {'class': 'form-wrapper'}}) }}
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        {{ form_widget(deposit.amount, {'attr': {'class': 'form-control'}}) }}
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+                    {{ form_widget(deposit.save, {'attr': {'class': 'btn btn-block btn-primary'}}) }}
+                    {{ form_end(deposit) }}
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" align="center">Account Ledger</h4>
+                    <h6 class="card-subtitle" align="center">Detailing the ins-and-outs of your account<br></h6>
+
+                    <div class="table-responsive" style="margin-top:10px;">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Transaction Date</th>
+                                <th scope="col">Transaction Amount</th>
+                                <th scope="col">Transaction Description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for txn in txns %}
+                                {% set type = txn.type %}
+                            <tr>
+                                <td>{{ txn.txnDate | date }}</td>
+                                <td><p {% if type == "Deposit" %}class="text-success"{% elseif type == "Withdrawl" %}class="text-danger"{% endif %}>{% if type == "Deposit" %}+ {% elseif type == "Withdrawl" %}- {% endif %}{{ txn.amount | format_currency('USD') }}</p></td>
+                                <td>{{ txn.description }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

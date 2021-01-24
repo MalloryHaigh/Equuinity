@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editing Post{% endblock %}
+
+{% block body %}
+    {% set ADMIN = "no" %}
+
+    {% for role in app.user.roles %}
+        {% if role == "ROLE_ADMIN" %}
+            {% set ADMIN = "yes" %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-body" style="text-align: center;">
+            <h2 class="card-title">Equuinity Forums</h2>
+            <a href="#" data-toggle="modal" data-target="#rules-modal" class="btn btn-sm btn-outline-info">Forum Rules</a> <a href="" class="btn btn-sm btn-outline-info">Modbox</a>
+        </div>
+    </div>
+
+    <!--  Modal content -->
+    <div class="modal fade" id="rules-modal" tabindex="-1" role="dialog"
+         aria-labelledby="rules-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h1>Forum Rules</h1>
+                    {{ rules | raw }}
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    {% if thread.postedBy.id != current.id %}
+    <div class="alert alert-danger">You do not have permission to edit this post!</div>
+    {% else %}
+
+
+    <div class="card border-success">
+        <div class="card-header bg-light">
+            <h3 class="mb-0 text-white"><a href="/forum/thread/{{ thread.id }}">Editing Thread "{{ thread.threadTitle }}"</a></h3></div>
+        <div class="card-body">
+            <div class="row" style="width:100%;">
+                <div class="col-sm-12 col-xs-12">
+                    {{ form_start(edit) }}
+
+                    <div class="form-group">
+                        {{ form_widget(edit.thread_title, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_widget(edit.post_body, {'attr': {'class': 'form-control mymce'}}) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_widget(edit.save, {'attr': {'class': 'btn btn-block btn-success'}}) }}
+                    </div>
+                    {{ form_end(edit) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+{% endblock %}

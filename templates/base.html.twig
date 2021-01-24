@@ -1,12 +1,300 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+<head>
+    <meta charset="UTF-8" />
+    <title>Equuinity | {% block title %}Welcome!{% endblock %}</title>
+
+    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}"/>
+
+    {% block stylesheets %}
+
+        <link href="{{ asset('css/style.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('css/custom.css') }}" rel="stylesheet"/>
+    {% endblock %}
+
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+    <!-- ============================================================== -->
+    <!-- Topbar header - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <header class="topbar">
+        <nav class="navbar top-navbar navbar-expand-lg navbar-dark">
+            <div class="navbar-header">
+                <!-- This is for the sidebar toggle which is visible on mobile only -->
+                <a class="nav-toggler waves-effect waves-light d-block d-lg-none" href="javascript:void(0)"><i
+                            class="ti-menu ti-close"></i></a>
+                <!-- ============================================================== -->
+                <!-- Logo -->
+                <!-- ============================================================== -->
+                <a class="navbar-brand" href="welcome">
+                    <!-- Logo icon -->
+                    <b class="logo-icon">
+                        <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                        <!-- Dark Logo icon -->
+                        <img src="{{ asset('logo-icon.png') }}" alt="homepage" class="dark-logo" />
+                        <!-- Light Logo icon -->
+                        <img src="{{ asset('logo-icon.png') }}" alt="homepage" class="light-logo" />
+                    </b>
+                    <!--End Logo icon -->
+                    <!-- Logo text -->
+                    <span class="logo-text">
+                            <!-- dark Logo text -->
+                            <img src="{{ asset('logo.png') }}" alt="homepage" class="dark-logo" />
+                        <!-- Light Logo text -->
+                            <img src="{{ asset('logo.png') }}" class="light-logo" alt="homepage" />
+                        </span>
+                </a>
+                <!-- ============================================================== -->
+                <!-- End Logo -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- Toggle which is visible on mobile only -->
+                <!-- ============================================================== -->
+                <a class="topbartoggler d-block d-lg-none waves-effect waves-light" href="javascript:void(0)"
+                   data-toggle="collapse" data-target="#navbarSupportedContent"
+                   aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i
+                            class="ti-more"></i></a>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Logo -->
+            <!-- ============================================================== -->
+            <div class="navbar-collapse collapse" id="navbarSupportedContent">
+                <!-- ============================================================== -->
+                <!-- toggle and nav items -->
+                <!-- ============================================================== -->
+                <ul class="navbar-nav mr-auto float-left">
+                </ul>
+                <!-- ============================================================== -->
+                <!-- Right side toggle and nav items -->
+                <!-- ============================================================== -->
+                <ul class="navbar-nav float-right">
+                    {% if app.user %}
+                    <!-- ============================================================== -->
+                    <!-- Messages -->
+                    <!-- ============================================================== -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle waves-effect waves-dark" href="{{ path('inbox') }}"> <i
+                                    class="mdi mdi-email"></i>
+                            <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                        </a>
+                    </li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle waves-effect waves-dark" href="{{ path('admin') }}"> <i class="mdi mdi-coffee"></i>
+                            </a>
+                        </li>
+                            {% endif %}
+                    <!-- ============================================================== -->
+                    <!-- End Messages -->
+                    <!-- ============================================================== -->
+                    <!-- ============================================================== -->
+                    <!-- Profile -->
+                    <!-- ============================================================== -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle waves-effect waves-dark" href="" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <img src="{{ app.user.avatar }}" alt="user" width="30" class="profile-pic rounded-circle" />
+                        </a>
+
+                        <div class="dropdown-menu mailbox dropdown-menu-right scale-up">
+                            <ul class="dropdown-user list-style-none">
+                                <li>
+                                    <div class="dw-user-box p-3 d-flex">
+                                        <div class="u-img"><img src="{{ app.user.avatar }}" alt="user" class="rounded" width="80"></div>
+                                        <div class="u-text ml-2">
+                                            <h4 class="mb-0">{{app.user.getDisplayName}} (#{{ app.user.getId }})</h4>
+                                            <p class="text-muted mb-1 font-14">Userlevel</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li role="separator" class="dropdown-divider"></li>
+                                <li class="user-list"><a class="px-3 py-2" href="{{ path('bank') }}"><i class="ti-wallet"></i> {{ app.user.getMoney | format_currency('USD') }}</a></li>
+                                <li class="user-list"><a class="px-3 py-2" href="{{ path('credits') }}"><i class="ti-heart"></i> {{ app.user.getCredits }}</a></li>
+                                <li role="separator" class="dropdown-divider"></li>
+                                <li class="user-list"><a class="px-3 py-2" href="{{ path('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- ============================================================== -->
+    <!-- End Topbar header -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <aside class="left-sidebar">
+        <!-- Sidebar scroll-->
+        <div class="scroll-sidebar">
+            <!-- Sidebar navigation-->
+            <nav class="sidebar-nav">
+                <ul id="sidebarnav">
+                    <!-- User Profile-->
+                    <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="{{ path('welcome') }}"><i class="mdi mdi-gauge"></i>Dashboard</a></li>
+                    <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="{{ path('user') }}"><i class="mdi mdi-account"></i>Stable</a></li>
+                    <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="{{ path('world') }}"><i class="mdi mdi-earth"></i>World</a></li>
+                    <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="{{ path('shows') }}"><i class="mdi mdi-certificate"></i>Shows</a></li>
+                    <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="{{ path('forum') }}"><i class="mdi mdi-city"></i>Community</a></li>
+                    <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark" href="{{ path('help') }}"><i class="mdi mdi-account"></i>Help</a></li>
+
+                </ul>
+            </nav>
+            <!-- End Sidebar navigation -->
+        </div>
+        <!-- End Sidebar scroll-->
+    </aside>
+    <!-- ============================================================== -->
+    <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Page wrapper  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+
+
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success alert-dismissible bg-success text-white border-0 fade show"
+                             role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible bg-danger text-white border-0 fade show"
+                     role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+                    {% block body %}{% endblock %}
+
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Container fluid  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- footer -->
+        <!-- ============================================================== -->
+        <footer class="footer">
+            © 2020 Equuinity
+        </footer>
+        <!-- ============================================================== -->
+        <!-- End footer -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Page wrapper  -->
+    <!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- All Jquery -->
+<!-- ============================================================== -->
+
+<script src="{{ asset('assets/libs/jquery/dist/jquery.min.js') }}"></script>
+<!-- Bootstrap tether Core JavaScript -->
+<script src="{{ asset('assets/libs/popper.js/dist/umd/popper.min.js') }}"></script>
+<script src="{{ asset('assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<!-- apps -->
+<script src="{{ asset('js/app.min.js') }}"></script>
+<script src="{{ asset('js/app.init.horizontal.js') }}"></script>
+<!-- slimscrollbar scrollbar JavaScript -->
+<script src="{{ asset('assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js') }}"></script>
+<script src="{{ asset('assets/extra-libs/sparkline/sparkline.js') }}"></script>
+<!--Wave Effects -->
+<script src="{{ asset('js/waves.js') }}"></script>
+<!--Menu sidebar -->
+<script src="{{ asset('js/sidebarmenu.js') }}"></script>
+<!--Custom JavaScript -->
+<script src="{{ asset('js/custom.min.js') }}"></script>
+
+<!-- This Page JS -->
+<script src="{{ asset('assets/libs/tinymce/tinymce.min.js') }}"></script>
+
+
+<!-- Chart JS -->
+<script src="{{ asset('js/pages/dashboards/dashboard1.js') }}" ></script>
+<script>
+    $(function () {
+        if ($(".mymce").length > 0) {
+            tinymce.init({
+                selector: "textarea.mymce",
+                theme: "modern",
+                height: 300,
+                plugins: [
+                    "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
+                    "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+                    "save table contextmenu directionality emoticons template paste textcolor"
+                ],
+                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | l      ink image | print preview media fullpage | forecolor backcolor emoticons",
+            });
+        }
+    });
+
+    $(function () {
+        if ($(".sig").length > 0) {
+            tinymce.init({
+                selector: "textarea.sig",
+                theme: "modern",
+                height: 150,
+                plugins: [
+                    "visualblocks visualchars code insertdatetime media nonbreaking image",
+                    "save table contextmenu directionality emoticons template paste textcolor"
+                ],
+                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | l      ink image | print preview media fullpage | forecolor backcolor emoticons",
+            });
+        }
+    });
+
+    // jQuery
+
+    $(function() {
+        $(".compose").on("click", function() {
+            $('.message-inbox').fadeOut("fast");
+            $('.compose').fadeOut("fast");
+            $('.message-compose').fadeIn("fast");
+            $('.compose-back').fadeIn("fast");
+        });
+
+        $(".compose-back").on("click", function() {
+            $('.message-compose').fadeOut("fast");
+            $('.compose-back').fadeOut("fast");
+            $('.message-inbox').fadeIn("fast");
+            $('.compose').fadeIn("fast");
+        });
+    });
+
+
+</script>
+
+
+{% block javascripts %}
+
+{% endblock %}
+
+
+</body>
 </html>
