@@ -252,7 +252,6 @@ class UserController extends AbstractController
      */
     public function credits(Request $request): Response
     {
-        #TODO Add redemption for upgrades
 
         return $this->render('user/credits.html.twig', [
             'controller_name' => 'UserController',

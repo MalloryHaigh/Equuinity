@@ -74,11 +74,11 @@
                             {%  endif %}
                         </div>
                     </div>
-                    <div class="row">
+
                         <div class="text-justify" style="min-height:150px;">
                             {{ thread.postBody | raw }}
                         </div>
-                    </div>
+
                     {% for role in op.roles %}
                         {% if role == "ROLE_ADMIN" or role == "ROLE_UPGRADED" %}
                             <div style="margin-top:10px;border-top: 1px solid #d6d6d6;padding-top:10px;width:100%;">
@@ -121,11 +121,11 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="row">
+
                         <div class="text-justify" style="min-height:150px;">
                         {{ reply.postBody | raw }}
                         </div>
-                    </div>
+
 
                     {% for role in reply.postedBy.roles %}
                         {% if role == "ROLE_ADMIN" or role == "ROLE_UPGRADED" %}
