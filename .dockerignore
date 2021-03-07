@@ -1,0 +1,6 @@
+./vendor
+./var
+./public/bundles
+.env*
+docker-compose.yaml
+.DS_Store

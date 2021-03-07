@@ -1,0 +1,46 @@
+upstream php-proxy {
+    server php:9000;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    root /var/www/html/public;
+
+    add_header 'Vary' 'Origin' always;
+    #TODO: CORS SHIT
+    #add_header 'Access-Control-Allow-Origin' $origin always;
+    add_header 'Access-Control-Allow-Credentials' 'true' always;
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+
+    location / {
+        try_files $uri /index.php$is_args$args;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php-proxy;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_read_timeout 180;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+
+    # serve static files
+    location ~ ^/(assets|images|javascript|js|css|flash|media|static)/  {
+        root  /var/www/html/public;
+        expires 1d;
+    }
+
+    location ~ \.(png|ico|jpg|jpeg)$ {
+        root /var/www/html/public;
+    }
+
+    location /index.php {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php-proxy;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_read_timeout 180;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+}

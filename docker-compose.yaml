@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  nginx:
+    build:
+      dockerfile: ./docker/nginx/nginx.dockerfile
+      context: .
+    ports:
+      - 8080:80
+    depends_on:
+      - php
+
+  php:
+    build:
+      dockerfile: ./docker/php/php.dockerfile
+      context: .
+    depends_on:
+      - db
+    env_file:
+      - .env
+      - .env.docker
+    volumes:
+      - ./:/var/www/html
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+
+volumes:
+  mysql-data:

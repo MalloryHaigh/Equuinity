@@ -5,6 +5,7 @@ doctrine:
         user: '%env(resolve:DATABASE_USER)%'
         password: '%env(resolve:DATABASE_PASS)%'
         dbname: '%env(resolve:DATABASE_NAME)%'
+        port: '%env(resolve:DATABASE_PORT)%'
 
 
         # IMPORTANT: You MUST configure your server version,

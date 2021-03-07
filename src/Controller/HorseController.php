@@ -74,6 +74,11 @@ class HorseController extends AbstractController
             $base = $package->getUrl($kernel->getProjectDir() . '/public/horses/Perlino.png');
         }
 
+       // Pattern
+        if (str_contains($phenotype,"Rabicano")) {
+            $pattern = $package->getUrl($kernel->getProjectDir() . '/public/horses/White-Rabicano.png');
+        }
+
         // dimensions of the final image
         $x = 800;
         $y = 568;
@@ -81,8 +86,10 @@ class HorseController extends AbstractController
 
         $image = imagecreatefrompng($bg);
         $color = imagecreatefrompng($base);
+        $pattern = imagecreatefrompng($pattern);
 
         imagescale($color,800,600);
+        imagescale($pattern,800,600);
 
         imagealphablending($final_img, true);
         imagesavealpha($final_img, true);
@@ -95,6 +102,7 @@ class HorseController extends AbstractController
         imagecopy($final_img, $color, 0, 0, 0, 0, $x, $y);
 
         // Patterns
+        imagecopy($final_img, $pattern, 0, 0, 0, 0, $x, $y);
 
         ob_start();
         imagepng($final_img);
