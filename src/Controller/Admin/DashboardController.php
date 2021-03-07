@@ -3,10 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\BankTransactions;
+use App\Entity\Breeds;
 use App\Entity\Config;
 use App\Entity\ForumReplies;
 use App\Entity\Forums;
 use App\Entity\ForumThreads;
+use App\Entity\Horses;
 use App\Entity\Messages;
 use App\Entity\Transactions;
 use App\Entity\User;
@@ -55,6 +57,10 @@ class DashboardController extends AbstractDashboardController
 
             MenuItem::section('Messages'),
             MenuItem::linkToCrud('Messages', 'fa fa-envelope', Messages::class),
+
+            MenuItem::section('Horses'),
+            MenuItem::linkToCrud('Breeds', 'fa fa-horse-head', Breeds::class),
+            MenuItem::linkToCrud('Horses', 'fa fa-horse-head', Horses::class),
         ];
     }
 }

@@ -21,7 +21,6 @@ class MessagesController extends AbstractController
      */
     public function index(Request $request, PaginatorInterface $paginator): Response
     {
-
         #TODO Calculate the number of new messages per user
 
         $theUser = $this->get('security.token_storage')->getToken()->getUser();
@@ -37,10 +36,6 @@ class MessagesController extends AbstractController
             $request->query->getInt('page', 1), /*page number*/
             10 /*limit per page*/
         );
-
-        // Generate the compose form
-        //$editProfile = $this->createForm(EditProfileType::class, $this->getUser());
-
 
         $message = new Messages();
         $compose = $this->createForm(SendMessageType::class,$message);
@@ -141,5 +136,27 @@ class MessagesController extends AbstractController
         $this->addFlash("success","You deleted a message!");
 
         return $this->redirectToRoute('inbox');
+    }
+
+    /**
+     * @Route("/inbox/count", name="inboxCount")
+     * @IsGranted("ROLE_USER")
+     */
+    public function inboxCount(): Response
+    {
+        /*$conn = $this->getDoctrine()->getConnection();
+
+            $sql = '
+            SELECT SUM(tracked) AS total_hours FROM activity a
+            WHERE a.project_id = :project_id and a.activity_date >= :last_bill
+            ORDER BY a.activity_date ASC
+            ';
+            $stmt = $conn->prepare($sql);
+            $stmt->execute(['project_id' => $proj,'last_bill' => $lastBill]);*/
+
+        return $this->render('messages/count.html.twig', [
+            'hello' => "Hello",
+            'controller_name' => 'MessagesController',
+        ]);
     }
 }

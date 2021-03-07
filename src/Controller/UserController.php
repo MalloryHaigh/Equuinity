@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\BankTransactions;
+use App\Entity\Horses;
 use App\Entity\Transactions;
 use App\Form\DepositType;
 use App\Form\EditPasswordType;
@@ -43,9 +44,18 @@ class UserController extends AbstractController
      */
     public function index(Request $request, ?int $id, UserPasswordEncoderInterface $passwordEncoder): Response
     {
+        // Fetch horses for this user
+        $horses = $this->getDoctrine()->getRepository(Horses::class)->findBy(
+            ['owner' => $id, 'active' => 1]
+        );
 
         // ID param is null, default to the logged in user
         if (!$id) {
+
+            // Fetch horses for this user
+            $horses = $this->getDoctrine()->getRepository(Horses::class)->findBy(
+                ['owner' => $this->getUser(), 'active' => 1]
+            );
 
             // Generate the forms to edit their profile, password, and stable
             $editProfile  = $this->createForm(EditProfileType::class, $this->getUser());
@@ -118,13 +128,15 @@ class UserController extends AbstractController
                 'player'       => $this->getUser(),
                 'editProfile'  => $editProfile->createView(),
                 'editPassword' => $editPassword->createView(),
-                'editStable'   => $editStable->createView()
+                'editStable'   => $editStable->createView(),
+                'horses' => $horses
             ]);
         } // ID param is not null, show the player we're viewing
         else {
             $thePlayer = $this->getDoctrine()->getRepository(User::class)->find($id);
             return $this->render('user/index.html.twig', [
                 'player'          => $thePlayer,
+                'horses' => $horses,
                 'controller_name' => 'UserController',
             ]);
         }

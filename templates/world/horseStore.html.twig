@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}World{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body" style="">
+                    <h1 align="center">Horse Store</h1>
+                    <h6 align="center">Buy Store Horses</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card text-white bg-info">
+        <div class="card-body">
+            <h3 class="card-title text-white" align="center">You have {{ app.user.getHorseTokens }} Horse Tokens Available</h3>
+            <p class="card-text text-center">You'll need one horse token per store horse you wish to create.</p>
+            <p class="card-text text-center">Store horses are created at 3 years old.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <img src="{{ asset('horse-1.png') }}" style="height:450px;">
+        </div>
+        <div class="col-lg-8">
+            <div class="card border-success">
+                <div class="card-header bg-success">
+                    <h4 class="mb-0 text-white">Create a Horse</h4></div>
+                <div class="card-body">
+                    {{ form_start(new_horse, {'attr': {'class': 'form-wrapper'}}) }}
+                    {{ form_end(new_horse) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

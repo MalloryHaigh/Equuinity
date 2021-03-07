@@ -136,6 +136,28 @@ class User implements UserInterface
     private int $shows = 1;
 
     /**
+     * @ORM\Column(type="integer",options={"default":5})
+     */
+
+    private int $horse_tokens = 5;
+
+    /**
+     * @return int
+     */
+    public function getHorseTokens(): int
+    {
+        return $this->horse_tokens;
+    }
+
+    /**
+     * @param int $horse_tokens
+     */
+    public function setHorseTokens(int $horse_tokens): void
+    {
+        $this->horse_tokens = $horse_tokens;
+    }
+
+    /**
      * @return int
      */
     public function getShows(): int
@@ -316,6 +338,7 @@ class User implements UserInterface
         $this->interest = 0.15;
         $this->avatar = 'https://i.ibb.co/8m6KdH6/default.png';
         $this->shows = 5;
+        $this->horse_tokens = 5;
     }
 
     /**

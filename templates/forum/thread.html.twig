@@ -59,7 +59,7 @@
         <div class="card-body">
             <div class="row" style="width:100%;">
                 <div class="col-2" style="text-align: center;">
-                    <img src="{{ op.avatar }}"><br>
+                    <img src="{{ op.avatar }}" width="150px;"><br>
                     <a href="{{ path('user', {'id': op.id }) }}"><h6 style="margin-top:8px;margin-bottom:-15px;">{{ op.displayName }} (#{{ op.id }})</h6></a>
                     {% for role in op.roles %}
                         {% if role == "ROLE_ADMIN" %}
@@ -111,7 +111,7 @@
             <div class="row" style="width:100%;">
                 <div class="col-2" style="text-align: center;">
                     <a id="{{ reply.id }}"></a>
-                    <img src="{{ reply.postedBy.avatar }}"><br>
+                    <img src="{{ reply.postedBy.avatar }}"  width="150px;"><br>
                     <a href="{{ path('user', {'id': reply.postedBy.id}) }}"><h6 style="margin-top:8px;margin-bottom:-15px;">{{ reply.postedBy.displayName }} (#{{ reply.postedBy.id }})</h6></a>
                     {% for role in reply.postedBy.roles %}
                         {% if role == "ROLE_ADMIN" %}

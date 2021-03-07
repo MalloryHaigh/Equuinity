@@ -100,23 +100,21 @@
                     <tr>
                         <th>Name</th>
                         <th>Details</th>
+                        <th>Color</th>
                         <th>Points</th>
                         <th>Status</th>
                     </tr>
                     </thead>
                     <tbody>
+                    {% for horse in horses %}
                         <tr>
-                            <td><a href="#">Souvereign</a></td>
-                            <td>12 Year Old Hanoverian Gelding</td>
-                            <td>1,123,456</td>
-                            <td><span class="badge badge-danger">For Sale</span> <span class="badge badge-info">For Stud</span></td>
+                            <td><a href="{{ path('horse', {'id': horse.id}) }}">{{ horse.name }}</a></td>
+                            <td>{{ horse.age }} Year Old {{ horse.breed.name }} {{ horse.gender }}</td>
+                            <td>{{ horse.phenotype }}</td>
+                            <td>{{ horse.points }}</td>
+                            <td><!--<span class="badge badge-danger">For Sale</span> <span class="badge badge-info">For Stud</span>--></td>
                         </tr>
-                        <tr>
-                            <td><a href="#">Souvereign</a></td>
-                            <td>12 Year Old Hanoverian Gelding</td>
-                            <td>1,123,456</td>
-                            <td></td>
-                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>

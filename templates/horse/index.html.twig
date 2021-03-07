@@ -1,20 +1,152 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HorseController!{% endblock %}
+{% block title %}Viewing Horse{% endblock %}
 
 {% block body %}
 <style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    code {
+        color: #818181;
+        font-size: 65%;
+    }
 </style>
+    <!-- Header Card -->
+    <div class="card text-center">
+        <div class="card-body">
+            <h1 class="card-title">{{ horse.name }} (#{{ horse.id }})</h1>
+            <p class="card-text">Owned by <a href="{{ path('user', {'id': horse.owner.id}) }}">{{ horse.owner.displayName }} (#{{ horse.owner.id }})</a></p>
+        </div>
+    </div>
+    <!-- End Header Card -->
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <!-- Basic Horse Info -->
+    <div class="row">
+        <!-- IMAGE -->
+        <div class="col-lg-8">
+            <!--<img src="{{ asset('sample_horse.png') }}" style="width:100%;">-->
+            <img src="data:image/png;base64,{{ image }}" style="width:100%;">
+        </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/Users/mallory/Sites/Equuinity 2/equuinity/src/Controller/HorseController.php'|file_link(0) }}">src/Controller/HorseController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/Users/mallory/Sites/Equuinity 2/equuinity/templates/horse/index.html.twig'|file_link(0) }}">templates/horse/index.html.twig</a></code></li>
-    </ul>
-</div>
+        <!-- INFO -->
+        <div class="col-lg-4">
+            <!-- BASICS -->
+            <div class="card border-info">
+                <div class="card-header bg-info">
+                    <h4 class="mb-0 text-white">Basic Information</h4></div>
+                <div class="card-body">
+                    <!-- Name -->
+                    <div class="row">
+                        <div class="col-sm-4 text-bold"><strong>NAME</strong></div>
+                        <div class="col-sm-8">{{ horse.name }} (#{{ horse.id }})</div>
+                    </div>
+                    <!-- Breed -->
+                    <div class="row">
+                        <div class="col-sm-4 text-bold"><strong>BREED</strong></div>
+                        <div class="col-sm-8">{{ horse.breed.name }}</div>
+                    </div>
+                    <!-- Gender -->
+                    <div class="row">
+                        <div class="col-sm-4 text-bold"><strong>GENDER</strong></div>
+                        <div class="col-sm-8">{{ horse.gender }}</div>
+                    </div>
+                    <!-- Age -->
+                    <div class="row">
+                        <div class="col-sm-4 text-bold"><strong>AGE</strong></div>
+                        <div class="col-sm-8">{{ horse.age }} (Ages {{ horse.birthDayOfWeek }}s)</div>
+                    </div>
+
+                    <hr>
+                    <!-- Owner -->
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-sm-4 text-bold"><strong>OWNER</strong></div>
+                        <div class="col-sm-8"><a href="{{ path('user', {'id': horse.owner.id}) }}">{{ horse.owner.displayName }} (#{{ horse.owner.id }})</a></div>
+                    </div>
+                    <!-- Breeder -->
+                    <div class="row">
+                        <div class="col-sm-4 text-bold"><strong>BREEDER</strong></div>
+                        <div class="col-sm-8"><a href="{{ path('user', {'id': horse.breeder.id}) }}">{{ horse.breeder.displayName }} (#{{ horse.breeder.id }})</a></div>
+                    </div>
+                    <!-- Brand -->
+                    <div class="row">
+                        <div class="col-sm-4 text-bold"><strong>BRAND</strong></div>
+                        <div class="col-sm-8">TODO</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12 text-center" style="margin-top: -10px; margin-bottom: 20px;">
+                <a href="#" class="btn btn-primary">Buy Horse</a> <a href="#" class="btn btn-primary">Breed To Horse</a>
+            </div>
+
+            <!-- GENETICS -->
+            <div class="card border-info">
+                <div class="card-header bg-info">
+                    <h4 class="mb-0 text-white">Genetics</h4></div>
+                <div class="card-body">
+                    <!-- Phenotype -->
+                    <div class="row">
+                        <div class="col-sm-12 text-bold text-center"><strong>COLOR</strong></div>
+                        <div class="col-sm-12 text-center">{{ horse.phenotype }}</div>
+                    </div>
+                    <!-- Genotype -->
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-sm-12 text-bold text-center"><strong>GENOTYPE</strong></div>
+                        <div class="col-sm-12 text-small text-center"><code>{{ horse.genotype }}</code></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Advanced Horse Info -->
+    <div class="row" style="margin-top:10px;">
+        <div class="col-lg-12">
+            <div class="card">
+            <div class="card-body">
+                <ul class="nav nav-tabs nav-bordered mb-3 customtab">
+                    <li class="nav-item">
+                        <a href="#showing" data-toggle="tab" aria-expanded="false" class="nav-link">
+                            <i class="mdi mdi-home-variant d-lg-none d-block mr-1"></i>
+                            <span class="d-none d-lg-block">SHOWING</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#pedigree" data-toggle="tab" aria-expanded="true"
+                           class="nav-link active">
+                            <i class="mdi mdi-account-circle d-lg-none d-block mr-1"></i>
+                            <span class="d-none d-lg-block">PEDIGREE</span>
+                        </a>
+                    </li>
+                    {% if horse.owner.id == app.user.id %}
+                    <li class="nav-item">
+                        <a href="#settings-b1" data-toggle="tab" aria-expanded="false" class="nav-link">
+                            <i class="mdi mdi-settings-outline d-lg-none d-block mr-1"></i>
+                            <span class="d-none d-lg-block">SETTINGS</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane" id="showing">
+                        <p>Showing</p>
+                    </div>
+                    <div class="tab-pane show active" id="pedigree">
+                        <p>Pedigree</p>
+                    </div>
+                    {% if horse.owner.id == app.user.id %}
+                    <div class="tab-pane" id="settings-b1">
+                        <p>Settings</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div> <!-- end card-body-->
+        </div> <!-- end card-->
+        </div>
+    </div>
+
+    <!-- End Horse Info -->
+
 {% endblock %}
